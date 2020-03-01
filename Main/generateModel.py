@@ -2,47 +2,30 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.pipeline import make_pipeline
 import pickle
 
 
-df=pd.read_csv('./dynamicTrainingData.csv', sep=',')
+df=pd.read_csv('./output/Training.csv', sep=',')
 df = df.loc[(df!=0).any(axis=1)]
 df = df.fillna(0)
 y = df['category']
 X = df.drop(['category'],axis=1)
 feature_list = list(X.columns)
-#print(X.shape)
 
 # scaler = StandardScaler()
 # scaler.fit(X)
 # X = scaler.transform(X)
-# pca= PCA(0.99)
+# pca= PCA(0.999)
 # pca.fit(X)
 # X = pca.transform(X)
-# pickle.dump(pca, open("./dynamicOutput/pca.pkl","wb"))
-# print(X.shape)
+# pickle.dump(pca, open("pca.pkl","wb"))
 
-std_pca = make_pipeline(StandardScaler(), PCA(0.99))
-X_trans = std_pca.fit_transform(X)
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X, y)
 
+filename = './output/scriptedModel.sav'
+pickle.dump(model, open(filename, 'wb'))
 
-tree = DecisionTreeClassifier()
-tree.fit(X_trans,y)
-
-
-# model = RandomForestClassifier(n_estimators=100)
-# model.fit(X_trans, y)
-
-fileP = "./PCA.pkl"
-pickle.dump(std_pca, open(fileP, 'wb'))
-
-# filename = './scriptedDynamicModel.sav'
-# pickle.dump(model, open(filename, 'wb'))
-
-filenameTree = './scriptedDynamicModelTree.sav'
-pickle.dump(tree, open(filenameTree, 'wb'))
 
 #Random Forest
 #

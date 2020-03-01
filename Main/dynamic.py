@@ -153,23 +153,22 @@ def startProcessing(directory):
             Arr.append(features.copy())
 
 def testWithModel():
-    model = pickle.load(open("./scriptedDynamicModel.sav", "rb"))
+    # Standard PCA component
+    std_pca = pickle.load(open("./PCA.pkl", "rb"))
+
     modelTree = pickle.load(open("./scriptedDynamicModelTree.sav", "rb"))
+    #model = pickle.load(open("./scriptedDynamicModel.sav", "rb"))
     df = pd.read_csv("./TestData.csv", sep=",")
 
     df = df.loc[(df != 0).any(axis=1)]
     df = df.fillna(0)
     df = df.drop(['name'], axis=1)
-    X_t = df
+    X_test = df
 
-    # scaler = StandardScaler()
-    # scaler.fit(X_t)
-    # scaler.transform(X_t)
-    # pca_reload = pickle.load(open("./dynamicOutput/pca.pkl", 'rb'))
-    # X_t = pca_reload.transform(X_t)
+    X_test = std_pca.transform(X_test)
 
-    yhat = model.predict(X_t)
-    yhatTree = modelTree.predict(X_t)
+    yhat = modelTree.predict(X_test)
+    #yhatTree = modelTree.predict(X_t)
     result = pd.DataFrame({'File_Hash': namearr, 'Predicted_Label': yhat})
     writeResultCSV(result)
     print(result)
